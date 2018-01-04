@@ -183,14 +183,19 @@ namespace MapObject
         private object getCorrespondingPropFromDictionary(PropertyInfo toProperty, string AltPropertyName = "")
         {
             Type propertyType = toProperty.PropertyType;
-            Type underlyingType = Nullable.GetUnderlyingType(propertyType) ?? propertyType;
+            bool CanBeNull = false;
+            if (Nullable.GetUnderlyingType(propertyType) != null)
+            {
+                CanBeNull = true;
+                propertyType = Nullable.GetUnderlyingType(propertyType);
+            }
             string toPropertyName = AltPropertyName == string.Empty ? toProperty.Name: AltPropertyName;
 
             object toValue;
             bool found = this._fromDictionary.TryGetValue(toPropertyName, out toValue);
             if (found)
             {
-                return conversion(toValue, underlyingType);
+                return conversion(toValue, propertyType,CanBeNull);
             }
 
             return null;
@@ -199,22 +204,36 @@ namespace MapObject
         private object getCorrespondingPropFromObject(PropertyInfo toProperty, string AltPropertyName = "")
         {
             Type propertyType = toProperty.PropertyType;
-            Type underlyingType = Nullable.GetUnderlyingType(propertyType) ?? propertyType;
-            string toPropertyName = AltPropertyName == string.Empty ?  toProperty.Name : AltPropertyName;
+            bool CanBeNull = false;
+            if (Nullable.GetUnderlyingType(propertyType)!=null)
+            {
+                CanBeNull = true;
+                propertyType = Nullable.GetUnderlyingType(propertyType);
+            } 
+
+
+            string toPropertyName = AltPropertyName == string.Empty ? toProperty.Name : AltPropertyName;
             var correspondingProp = this._fromProperties.FirstOrDefault(n => n.Name.Equals(toPropertyName, StringComparison.InvariantCultureIgnoreCase));
             if (correspondingProp != null)
             {
-                return conversion(correspondingProp.GetValue(this._from), underlyingType);
-            }   
+                return conversion(correspondingProp.GetValue(this._from),  propertyType, CanBeNull);
+            }
             return null;
         }
 
-        private object conversion(object Value, Type ObjectType)
+        private object conversion(object Value,  Type ObjectType, bool CanBeNull=false)
         {
          
             if (Value==null)
             {
-                return getDefaultValue(ObjectType);
+                if (CanBeNull)
+                {
+                    return null;
+                }
+                else
+                {
+                    return getDefaultValue(ObjectType);
+                }
             }
             object result = null;
 

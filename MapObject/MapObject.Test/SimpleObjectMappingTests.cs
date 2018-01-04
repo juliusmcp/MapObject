@@ -22,7 +22,24 @@ namespace MapObject.Test
             Assert.AreEqual(simple.Valid, mapped.Valid);
             Assert.AreEqual(simple.understated, mapped.Understated);
         }
-
+        [TestMethod]
+        public void TestSimpleMappingNullables()
+        {
+            Mapper mapobject = new Mapper();
+            TestDBObjectSimple simple = GetTestDBObjectSimple();
+            TestDTOObjectSimple mapped = mapobject.MapFrom<TestDBObjectSimple>(simple).MapTo<TestDTOObjectSimple>();
+            Assert.IsNotNull(mapped);
+            Assert.AreEqual(simple.Name, mapped.Name);
+            Assert.AreEqual(simple.Id, mapped.Id);
+            Assert.AreEqual(simple.Longer, mapped.Longer);
+            Assert.AreEqual(simple.Count, mapped.Count);
+            Assert.AreEqual(simple.Floater, mapped.Floater);
+            Assert.AreEqual(simple.Valid, mapped.Valid);
+            Assert.AreEqual(simple.understated, mapped.Understated);
+            Assert.AreEqual(simple.Canbenull, mapped.Canbenull);
+            Assert.AreEqual(simple.CanbenullDate, mapped.CanbenullDate);
+            
+        }
         [TestMethod]
         public void TestSimpleMappingAltSignature()
         {
@@ -199,7 +216,7 @@ namespace MapObject.Test
             simple.TestDate = DateTime.Today.Date;
             simple.understated = "underestimated";
             simple.Valid = false;
-
+       
             return simple;
         }
     }
