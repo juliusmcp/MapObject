@@ -211,6 +211,11 @@ namespace MapObject
 
         private object conversion(object Value, Type ObjectType)
         {
+         
+            if (Value==null)
+            {
+                return getDefaultValue(ObjectType);
+            }
             object result = null;
 
             if (ObjectType.Equals(typeof(DateTime)))
@@ -220,10 +225,6 @@ namespace MapObject
 
             }
 
-            if (Value==null)
-            {
-                return getDefaultValue(ObjectType);
-            }
            
             try
             {
